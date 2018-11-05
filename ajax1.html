@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <input id='btn' type="button" value="提交">
+    <ul id="ulIndex"></ul>
+    <!-- ajax
+    1.浏览器
+    2.ajax对象  
+    3.ajax.open(method,url,true) 初始化参数  发送方式  发送地址 同步还是异步
+    4.ajax.send();发送请求
+    5.onreadystatechange   监听数据 返回状态信息在链路上的
+        0:信息未发送出去 
+        1:信息发送出去 已经调用send（）方法  正在发送请求
+        2: 已经读取，send（）方法执行完成，接收到全部响应内容
+        3:交互中，正在解析请求内容
+        4:完成，响应内容解析完成
+        6.status==200 403 503   服务器返回的信息状态码 -->
+
+    <script>
+        btn.onclick = function () {
+            ajaxFun(showList);//传入回掉函数 
+        }
+        function ajaxFun(callBack, method) {
+            var xhl = null;
+            if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();//创建ajax对象
+            } else {
+                xhl = new ActiveXObject('Microsoft.XMLHttp');
+            }
+            if (method == 'get') {
+                xhl.open('get','../getNew.php?username=aimee&age=18',true);
+                xhl.send();
+
+            } else if (method == 'post') {
+                xhl.open('post', '../postNews.php', true);
+                xhl.setRequestHeader('Content-type', 'application/x-www-form-urlencode');//post数据文本内容的编码格式
+
+                xhl.send("username=aimee&age=18");//发送出去的数据
+            }
+
+            xhl.onreadystatechange = function () {//监听
+                //每次状态的变化都会触发onreadystatechange()函数
+                if (xhr.readyState == 4) {//返回成功
+                    if (xhr.status == 200) {//信息正确
+                        var data = xhl.responseText;//将服务器返回的信息responseText由字符串转换为JSON对象
+                        callBack(data);//渲染服务器返回数据，将其显示到页面中，写成回掉调函数的形式方便被扩展调用
+                    }
+                }
+            }
+        }
+        //JSON格式
+        //   var data=[
+        //       {},
+        //       {},
+        //       {},
+        //   ]
+        function callBack(data) {
+            var str = '';
+            data.forEach(function (ele, index) {
+                str += '<li>' + ele.title + '-' + ele.date + '</li>'
+            })
+            ulIndex.innerHtml = str;
+        }
+
+
+    </script>
+</body>
+
+</html>
